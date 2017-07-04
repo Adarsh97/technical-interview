@@ -1,0 +1,23 @@
+...............recursive fibonaci.................
+
+
+
+
+"""Implement a function recursivly to get the desired
+Fibonacci sequence value.
+Your code should have the same input/output as the 
+iterative code in the instructions."""
+
+def get_fib(p):
+    if p<=0:
+        return 0
+    elif p==1:
+        return 1
+    else:
+        return get_fib(p-1)+get_fib(p-2)
+    
+
+# Test cases
+print get_fib(9)
+print get_fib(11)
+print get_fib(0)
