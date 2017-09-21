@@ -1,0 +1,75 @@
+
+//time scheduling problem l halls with n session first approach.
+
+
+
+#include <bits/stdc++.h>
+#include<algorithm>
+
+using namespace std;
+struct node 
+{
+    int s,f;
+};
+
+bool comp (node a,node b)
+{
+    return a.f<=b.f;
+    
+}
+int main() {
+    int n,l,delimtr,t,c,ans,k;
+    cin >> n>>l;
+    if(n<=l)
+        delimtr=n;
+    else
+        delimtr=l;
+    int i,j;
+  node a[n];
+    for(i=0;i<n;i++)
+    {
+        cin>>a[i].s>>a[i].f;
+    }
+    sort(a,a+n,comp);
+    //t=announcement time
+    //ans=number of times announcement should be done.
+    // array b for storing announcement times.
+    t=a[0].f;
+    i=0;
+    c=1;
+    ans=1;
+    int b[n];
+    k=1;
+    b[0]=t;
+    while (i<n)
+    {
+        if(c>delimtr)
+        {
+            ans++;
+            c=1;
+            t=a[i].f;
+            b[k++]=t;
+            i++;
+            
+        }
+        else if((t>=a[i].s)&&(t<=a[i].f))
+        {
+            c++;
+            i++;
+        }
+        else
+        {
+            c=1;
+            t=a[i].f;
+            ans++;
+            b[k++]=t;
+            i++;
+        }
+    }
+    cout<<"minimum number of announcement is: "<<ans<<endl;
+    cout<<"The time intervels are:"<<endl;
+    for(i=0;i<k;i++)
+        cout<<b[i]<<" ";
+        
+    return 0;
+}
