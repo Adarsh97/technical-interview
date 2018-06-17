@@ -1,0 +1,157 @@
+//  flipping coin by lazy propagation
+
+#include<bits/stdc++.h>
+#include <iostream>
+#include<cstring>
+#include<cstdio>
+#include<set>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+
+typedef long long int ll;
+
+vector <ll> lz(1000005,0);
+vector<int> sg(1000005,0);
+
+void ranger(ll si, ll ss, ll se, ll us, ll ue, ll val)
+{
+    // If lazy value is non-zero for current node of segment
+    // tree, then there are some pending updates. So we need
+    // to make sure that the pending updates are done before
+    // making new updates. Because this value may be used by
+    // parent after recursive calls (See last line of this
+    // function)
+    if (lz[si] != 0)
+    {
+        // Make pending updates using value stored in lazy
+        // nodes
+        if(lz[si]%2!=0)
+        {
+        sg[si] = (se-ss+1-sg[si]);
+        }
+        // checking if it is not leaf node because if
+        // it is leaf node then we cannot go further
+        if (ss != se)
+        {
+            // We can postpone updating children we don't
+            // need their new values now.
+            // Since we are not yet updating children of si,
+            // we need to set lazy flags for the children
+            lz[si*2 + 1]   += lz[si];
+            lz[si*2 + 2]   += lz[si];
+        }
+ 
+        // Set the lazy value for current node as 0 as it
+        // has been updated
+        
+        lz[si] = 0;
+    }
+ 
+    // out of range
+    if (ss>se || ss>ue || se<us)
+        return ;
+ 
+    // Current segment is fully in range
+    if (ss>=us && se<=ue)
+    {
+        // Add the difference to current node
+        sg[si] = (se-ss+1-sg[si]);
+ 
+        // same logic for checking leaf node or not
+        if (ss != se)
+        {
+            // This is where we store values in lazy nodes,
+            // rather than updating the segment tree itelf
+            // Since we don't need these updated values now
+            // we postpone updates by storing values in lazy[]
+            lz[si*2 + 1]   += val;
+            lz[si*2 + 2]   += val;
+        }
+        return;
+    }
+ 
+    // If not completely in rang, but overlaps, recur for
+    // children,
+    int mid = (ss+se)/2;
+   ranger(si*2+1, ss, mid, us, ue, val);
+    ranger(si*2+2, mid+1, se, us, ue, val);
+ 
+    // And use the result of children calls to update this
+    // node
+    sg[si] = sg[si*2+1] + sg[si*2+2];
+}
+
+
+ll getSumUtil(ll ss, ll se, ll qs, ll qe, ll si)
+{
+    // If lazy flag is set for current node of segment tree,
+    // then there are some pending updates. So we need to
+    // make sure that the pending updates are done before
+    // processing the sub sum query
+   if (lz[si] != 0)
+    {
+        // Make pending updates using value stored in lazy
+        // nodes
+        if(lz[si]%2!=0)
+        {
+        sg[si] = (se-ss+1-sg[si]);
+        }
+        // checking if it is not leaf node because if
+        // it is leaf node then we cannot go further
+        if (ss != se)
+        {
+            // We can postpone updating children we don't
+            // need their new values now.
+            // Since we are not yet updating children of si,
+            // we need to set lazy flags for the children
+            lz[si*2 + 1]   += lz[si];
+            lz[si*2 + 2]   += lz[si];
+        }
+ 
+        // Set the lazy value for current node as 0 as it
+        // has been updated
+        
+        lz[si] = 0;
+    }
+    // Out of range
+    if (ss>se || ss>qe || se<qs)
+        return 0;
+ 
+    // At this point we are sure that pending lazy updates
+    // are done for current node. So we can return value 
+    // (same as it was for query in our previous post)
+ 
+    // If this segment lies in range
+    if (ss>=qs && se<=qe)
+        return sg[si];
+ 
+    // If a part of this segment overlaps with the given
+    // range
+    int mid = (ss + se)/2;
+    return getSumUtil(ss, mid, qs, qe, 2*si+1) +
+           getSumUtil(mid+1, se, qs, qe, 2*si+2);
+}
+ 
+ 
+int main() {
+	// your code goes here
+	
+	ll i,j,k,l,n,m,d,s,p,c,q,x,y;
+	ll t;
+    cin>>n>>q;
+    while(q--)
+    {
+      
+        cin>>p>>i>>j;
+        if(p==1)
+        { k=getSumUtil(0,n-1,i,j,0);
+            cout<<k<<endl;
+        }
+        else if(p==0)
+        {
+            ranger(0,0,n-1,i,j,1);
+        }
+    }
+	return 0;
+}
